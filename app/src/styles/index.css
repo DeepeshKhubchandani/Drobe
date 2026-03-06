@@ -19,14 +19,14 @@ body {
   padding: 0;
   width: 100%;
   /* Use dvh (dynamic viewport height) for mobile browsers */
-  height: 100dvh;
-  /* Fallbacks for older browsers */
-  height: 100vh;
+  height: 100svh; /* Small viewport height - excludes browser UI */
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: contain;
   position: fixed;
+  /* Add safe area for notch/home indicator */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #root {
@@ -35,6 +35,8 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  /* Ensure content respects safe areas */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Ensure proper mobile viewport handling for iOS Safari */

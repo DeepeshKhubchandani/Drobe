@@ -62,7 +62,8 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
         background: "rgba(247,245,242,0.95)",
         backdropFilter: "blur(20px)",
         borderTop: "1px solid #E8E3DC",
-        padding: "10px 8px 24px",
+        padding: "10px 8px calc(24px + env(safe-area-inset-bottom))",
+        paddingBottom: "max(24px, env(safe-area-inset-bottom))",
         zIndex: 40,
       }}
     >
