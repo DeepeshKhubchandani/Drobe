@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useViewportOffset } from '../../../hooks/useViewportOffset';
 import logoImg from '../../../assets/logo.png';
 
 interface AuthScreenProps {
@@ -8,6 +9,7 @@ interface AuthScreenProps {
 
 export function AuthScreen({ onSuccess }: AuthScreenProps) {
   const { signIn, signUp } = useAuth();
+  const bottomOffset = useViewportOffset();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,7 +48,10 @@ export function AuthScreen({ onSuccess }: AuthScreenProps) {
       </div>
 
       {/* Top section */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 mt-10 w-full max-w-sm">
+      <div
+        className="flex-1 flex flex-col items-center justify-center px-8 w-full max-w-sm"
+        style={{ paddingBottom: `${bottomOffset + 20}px` }}
+      >
         {/* Logo */}
         <div className="mb-8" style={{ width: 280 }}>
           <img

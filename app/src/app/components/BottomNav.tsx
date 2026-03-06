@@ -1,4 +1,5 @@
 import React from "react";
+import { useViewportOffset } from "../../hooks/useViewportOffset";
 
 interface BottomNavProps {
   active: string;
@@ -55,10 +56,13 @@ const navItems = [
 ];
 
 export function BottomNav({ active, onNavigate }: BottomNavProps) {
+  const bottomOffset = useViewportOffset();
+
   return (
     <div
-      className="absolute left-0 right-0 flex items-center justify-around bottom-nav"
+      className="absolute left-0 right-0 flex items-center justify-around"
       style={{
+        bottom: `${bottomOffset}px`,
         background: "rgba(247,245,242,0.95)",
         backdropFilter: "blur(20px)",
         borderTop: "1px solid #E8E3DC",
