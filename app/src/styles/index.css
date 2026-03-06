@@ -60,7 +60,14 @@ body {
 
 @media (max-width: 767px) {
   .bottom-nav {
-    bottom: 80px;
+    bottom: 80px; /* Chrome/Android */
+  }
+
+  /* Safari iOS has smaller chrome - reduce offset */
+  @supports (-webkit-touch-callout: none) {
+    .bottom-nav {
+      bottom: 50px;
+    }
   }
 }
 
