@@ -26,10 +26,10 @@ export function useViewportOffset() {
       if (isSafari) {
         setBottomOffset(20); // Safari needs less offset
       } else if (isChrome) {
-        setBottomOffset(70); // Chrome needs more offset
+        setBottomOffset(90); // Chrome needs more offset
       } else {
         // Default fallback for other browsers
-        setBottomOffset(60);
+        setBottomOffset(80);
       }
     };
 
