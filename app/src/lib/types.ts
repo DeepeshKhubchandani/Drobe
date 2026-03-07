@@ -56,6 +56,7 @@ export interface WeatherData {
   precipitation_probability: number;
   wind_speed: number;
   icon: string;
+  location?: string;
 }
 
 export interface ClothingAnalysis {

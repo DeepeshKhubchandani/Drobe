@@ -12,13 +12,12 @@ interface WardrobeScreenProps {
 }
 
 export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
-  const { items, isLoading, addItem, deleteItem } = useWardrobe();
+  const { items, isLoading, loadingItemIds, addItem, deleteItem } = useWardrobe();
   const { outfits, toggleFavorite } = useOutfits();
   const [activeCategory, setActiveCategory] = useState("All");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selectedItem, setSelectedItem] = useState<typeof items[0] | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
 
   const filtered =
     activeCategory === "All"
@@ -36,10 +35,11 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
     const { success, error } = await addItem(file);
-    setIsUploading(false);
     setShowAddDialog(false);
+
+    // Reset input so same file can be uploaded again
+    e.target.value = '';
 
     if (!success) {
       alert(error || 'Failed to add item');
@@ -183,6 +183,7 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
             {filtered.map((item) => {
               const outfitsWithItem = getOutfitsWithItem(item.id);
               const hasOutfits = outfitsWithItem.length > 0;
+              const isLoadingAnalysis = loadingItemIds.has(item.id);
 
               return (
               <button
@@ -197,6 +198,26 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                     alt={item.subcategory || item.category}
                     className="w-full h-full object-cover"
                   />
+                  {isLoadingAnalysis && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: "rgba(26,26,26,0.75)", backdropFilter: "blur(2px)" }}
+                    >
+                      <div className="flex flex-col items-center gap-2">
+                        <div
+                          style={{
+                            width: 32,
+                            height: 32,
+                            border: "3px solid rgba(201,169,110,0.3)",
+                            borderTop: "3px solid #C9A96E",
+                            borderRadius: "50%",
+                            animation: "spin 1s linear infinite",
+                          }}
+                        />
+                        <p style={{ fontSize: 11, color: "#C9A96E", fontWeight: 600 }}>Analyzing...</p>
+                      </div>
+                    </div>
+                  )}
                   <div
                     className="absolute bottom-2 right-2"
                     style={{ background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: 8, padding: "3px 8px" }}
@@ -216,8 +237,8 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                   )}
                 </div>
                 <div className="p-3">
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#1A1A1A" }}>
-                    {item.subcategory || item.category}
+                  <p style={{ fontSize: 12, fontWeight: 600, color: isLoadingAnalysis ? "#A0917E" : "#1A1A1A" }}>
+                    {isLoadingAnalysis ? "Analyzing..." : (item.subcategory || item.category)}
                   </p>
                   <div className="flex gap-1 mt-1.5 flex-wrap">
                     {item.colors.slice(0, 2).map((color) => (
@@ -255,6 +276,7 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
             {filtered.map((item) => {
               const outfitsWithItem = getOutfitsWithItem(item.id);
               const hasOutfits = outfitsWithItem.length > 0;
+              const isLoadingAnalysis = loadingItemIds.has(item.id);
 
               return (
               <button
@@ -265,6 +287,23 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               >
                 <div style={{ width: 60, height: 60, borderRadius: 12, overflow: "hidden", flexShrink: 0, position: "relative" }}>
                   <ImageWithFallback src={item.thumbnail_url} alt={item.subcategory || item.category} className="w-full h-full object-cover" />
+                  {isLoadingAnalysis && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: "rgba(26,26,26,0.75)", backdropFilter: "blur(2px)" }}
+                    >
+                      <div
+                        style={{
+                          width: 20,
+                          height: 20,
+                          border: "2px solid rgba(201,169,110,0.3)",
+                          borderTop: "2px solid #C9A96E",
+                          borderRadius: "50%",
+                          animation: "spin 1s linear infinite",
+                        }}
+                      />
+                    </div>
+                  )}
                   {hasOutfits && (
                     <div
                       className="absolute top-1 right-1"
@@ -278,8 +317,8 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A" }}>
-                    {item.subcategory || item.category}
+                  <p style={{ fontSize: 13, fontWeight: 600, color: isLoadingAnalysis ? "#A0917E" : "#1A1A1A" }}>
+                    {isLoadingAnalysis ? "Analyzing..." : (item.subcategory || item.category)}
                   </p>
                   <p style={{ fontSize: 11, color: "#A0917E", marginTop: 2 }}>
                     {item.category} · Worn {item.worn_count}×
@@ -333,7 +372,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               onChange={handleAddPhoto}
               style={{ display: "none" }}
               id="camera-input"
-              disabled={isUploading}
             />
             <label
               htmlFor="camera-input"
@@ -343,12 +381,11 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                 background: "#fff",
                 borderRadius: 12,
                 marginBottom: 12,
-                cursor: isUploading ? "not-allowed" : "pointer",
+                cursor: "pointer",
                 textAlign: "center",
-                opacity: isUploading ? 0.6 : 1,
               }}
             >
-              {isUploading ? "Uploading..." : "Take Photo"}
+              Take Photo
             </label>
             <input
               type="file"
@@ -356,7 +393,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               onChange={handleAddPhoto}
               style={{ display: "none" }}
               id="gallery-input"
-              disabled={isUploading}
             />
             <label
               htmlFor="gallery-input"
@@ -365,12 +401,11 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                 padding: 16,
                 background: "#fff",
                 borderRadius: 12,
-                cursor: isUploading ? "not-allowed" : "pointer",
+                cursor: "pointer",
                 textAlign: "center",
-                opacity: isUploading ? 0.6 : 1,
               }}
             >
-              {isUploading ? "Uploading..." : "Choose from Gallery"}
+              Choose from Gallery
             </label>
           </div>
         </div>

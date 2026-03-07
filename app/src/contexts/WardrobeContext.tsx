@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 interface WardrobeContextType {
   items: WardrobeItem[];
   isLoading: boolean;
+  loadingItemIds: Set<string>;
   addItem: (file: File) => Promise<{ success: boolean; error?: string }>;
   deleteItem: (itemId: string) => Promise<boolean>;
   updateItem: (itemId: string, updates: Partial<WardrobeItem>) => Promise<boolean>;
@@ -19,6 +20,7 @@ export function WardrobeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingItemIds, setLoadingItemIds] = useState<Set<string>>(new Set());
 
   const refreshItems = async () => {
     if (!user) return;
@@ -37,40 +39,60 @@ export function WardrobeProvider({ children }: { children: React.ReactNode }) {
   const addItem = async (file: File): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Not authenticated' };
 
-    setIsLoading(true);
-
     // First, add item without AI analysis
     const { item, error } = await WardrobeService.addWardrobeItem(user.id, file);
 
     if (error || !item) {
-      setIsLoading(false);
       return { success: false, error };
     }
 
-    // Add to local state immediately
+    // Add to local state immediately with loading indicator
     setItems((prev) => [item, ...prev]);
+    setLoadingItemIds((prev) => new Set(prev).add(item.id));
 
-    // Then analyze with AI in background
-    const { analysis } = await AIService.analyzeClothing(item.photo_url);
+    // Then analyze with AI in background (don't block UI)
+    (async () => {
+      const { analysis } = await AIService.analyzeClothing(item.photo_url);
 
-    if (analysis) {
-      // Update item with AI metadata
-      const success = await WardrobeService.updateWardrobeItem(item.id, {
-        category: analysis.category as any,
-        subcategory: analysis.subcategory,
-        colors: analysis.colors,
-        seasons: analysis.seasons,
-        formality: analysis.formality as any,
-        ai_metadata: analysis,
-      } as Partial<WardrobeItem>);
+      if (analysis) {
+        // Update item with AI metadata
+        const success = await WardrobeService.updateWardrobeItem(item.id, {
+          category: analysis.category as any,
+          subcategory: analysis.subcategory,
+          colors: analysis.colors,
+          seasons: analysis.seasons,
+          formality: analysis.formality as any,
+          ai_metadata: analysis,
+        } as Partial<WardrobeItem>);
 
-      if (success) {
-        // Refresh to get updated item
-        await refreshItems();
+        if (success) {
+          // Update local state with analyzed data
+          setItems((prev) =>
+            prev.map((i) =>
+              i.id === item.id
+                ? {
+                    ...i,
+                    category: analysis.category as any,
+                    subcategory: analysis.subcategory,
+                    colors: analysis.colors,
+                    seasons: analysis.seasons,
+                    formality: analysis.formality as any,
+                    ai_metadata: analysis,
+                  }
+                : i
+            )
+          );
+        }
       }
-    }
 
-    setIsLoading(false);
+      // Remove from loading set
+      setLoadingItemIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
+    })();
+
     return { success: true };
   };
 
@@ -97,7 +119,7 @@ export function WardrobeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <WardrobeContext.Provider
-      value={{ items, isLoading, addItem, deleteItem, updateItem, refreshItems }}
+      value={{ items, isLoading, loadingItemIds, addItem, deleteItem, updateItem, refreshItems }}
     >
       {children}
     </WardrobeContext.Provider>

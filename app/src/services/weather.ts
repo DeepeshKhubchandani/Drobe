@@ -13,28 +13,35 @@ export class WeatherService {
     error?: string;
   }> {
     try {
+      console.log('WeatherService: Fetching weather for location:', location);
+
       // Check cache
       const cached = this.cache.get(location);
       if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+        console.log('WeatherService: Returning cached weather');
         return { weather: cached.data };
       }
 
       // Call edge function
+      console.log('WeatherService: Calling get-weather edge function...');
       const { data, error } = await supabase.functions.invoke('get-weather', {
         body: { location },
       });
 
+      console.log('WeatherService: Response:', { data, error });
+
       if (error) {
-        console.error('Error fetching weather:', error);
+        console.error('WeatherService: Error fetching weather:', error);
         return { weather: null, error: error.message };
       }
 
       // Cache result
       this.cache.set(location, { data: data.weather, timestamp: Date.now() });
 
+      console.log('WeatherService: Success! Weather:', data.weather);
       return { weather: data.weather };
     } catch (error) {
-      console.error('Exception in getWeather:', error);
+      console.error('WeatherService: Exception in getWeather:', error);
       return { weather: null, error: 'Failed to fetch weather' };
     }
   }

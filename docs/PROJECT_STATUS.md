@@ -1,7 +1,7 @@
 # Drobe MVP - Project Status
 
-**Last Updated**: March 6, 2026
-**Status**: Edge Functions Deployed - Debugging Model Access
+**Last Updated**: March 6, 2026 - 10:00 PM
+**Status**: ✅ MVP Complete - All Core Features Working
 
 ## Overview
 
@@ -71,16 +71,60 @@ Drobe is an AI-powered wardrobe management and outfit planning Progressive Web A
 ### 6. UI Screens
 - ✅ **SplashScreen** - Welcome screen with branding (logo: 320px)
 - ✅ **AuthScreen** - Sign in/Sign up with toggle (logo: 280px)
-- ✅ **WardrobeScreen** - Display wardrobe items with photo upload (logo: 48px)
-- ✅ **AIScreen** - AI stylist interface (logo: 48px)
-- ✅ **OutfitPlannerScreen** - Plan outfits for events (logo: 48px)
-- ✅ **ProfileScreen** - User profile and stats (logo: 48px)
+- ✅ **WardrobeScreen** - Display wardrobe items with photo upload (logo: 58px)
+- ✅ **AIScreen** - AI stylist interface with "Style AI" title (logo: 58px)
+- ✅ **OutfitPlannerScreen** - Plan outfits for events (logo: 58px)
+- ✅ **ProfileScreen** - User profile with dynamic stats from contexts (logo: 58px)
 
-### 7. Recent Updates
+### 7. Recent Updates (March 6, 2026)
+
+**Morning Session:**
 - ✅ Fixed all logo import paths (migrated from Figma assets to local)
-- ✅ Increased logo sizes across all screens for better visibility
+- ✅ Updated logo sizes to 58px across main screens for consistency
 - ✅ Connected UI to real backend services
 - ✅ Integrated authentication flow
+- ✅ **ProfileScreen improvements**:
+  - Removed sustainability score section
+  - Added dynamic stats (Items, Outfits, Saved) from contexts
+  - Display user initials in avatar
+  - Show member since date from profile
+- ✅ **AIScreen header redesign**:
+  - Changed title from "What are you dressing for?" to "Style AI"
+  - Added subtitle "What are you dressing for today?"
+  - Moved "AI Stylist" badge to top right
+  - Removed weather widget from header
+  - Removed "Weather · Location · Dress code" text
+- ✅ **Mobile viewport fixes**:
+  - Removed Figma phone frame preview
+  - Implemented responsive layout for mobile and desktop
+  - Created `useViewportOffset` hook for browser chrome detection
+  - Fixed bottom navigation positioning for Safari (20px) and Chrome (90px)
+  - Desktop view shows centered mobile preview with background gradient
+- ✅ **Vercel deployment** configured with vercel.json
+
+**Evening Session (AI Integration):**
+- ✅ **Edge Functions deployed and working**:
+  - `get-weather` - Fetches weather from OpenWeatherMap (imperial units)
+  - `analyze-clothing` - AI vision analysis of clothing photos
+  - `suggest-outfits` - AI outfit recommendations based on occasion/weather
+- ✅ **Fixed CORS issues** - All edge functions now have proper CORS headers
+- ✅ **Fixed JWT authentication** - Disabled JWT for edge functions (weather is public data)
+- ✅ **Fixed Claude API model** - Updated to `claude-sonnet-4-5-20250929`
+- ✅ **Fixed JSON parsing** - Strip markdown code blocks from Claude responses
+- ✅ **Weather integration**:
+  - Real-time weather display in Fahrenheit and MPH
+  - Default location: Evanston, IL 60201
+  - Shows location name, temperature, wind speed, conditions
+- ✅ **Wardrobe loading states**:
+  - Items show "Analyzing..." spinner during AI analysis
+  - Upload button remains active - supports multiple simultaneous uploads
+  - Each item tracks its own loading state independently
+- ✅ **AI Screen fully functional**:
+  - Generates outfit suggestions based on user's wardrobe
+  - Considers weather conditions in recommendations
+  - Shows reasoning for each outfit suggestion
+  - Displays actual wardrobe items with photos
+  - Star button saves outfits to database
 
 ## Technical Stack
 
@@ -120,58 +164,65 @@ OPENWEATHER_API_KEY=<your-key>
 
 ## Current State
 
-### What's Working
-1. ✅ App runs locally via `npm run dev`
+### What's Working - ALL CORE FEATURES! ✅
+1. ✅ App runs locally via `npm run dev` (from `/app` directory)
 2. ✅ Authentication system (sign up, sign in, sign out)
 3. ✅ Wardrobe item upload with client-side image processing
-4. ✅ All UI screens render correctly
-5. ✅ Database connectivity and CRUD operations
-6. ✅ Responsive mobile-first design
+4. ✅ **AI clothing analysis** - Photos automatically analyzed by Claude Vision
+5. ✅ **Real-time weather** - Fetches current conditions for Evanston, IL
+6. ✅ **AI outfit suggestions** - Generates personalized outfits based on occasion and weather
+7. ✅ All UI screens render correctly with consistent styling
+8. ✅ Database connectivity and CRUD operations
+9. ✅ Responsive mobile-first design with desktop preview mode
+10. ✅ Mobile browser viewport handling (Safari & Chrome)
+11. ✅ Dynamic profile stats from real data
+12. ✅ Multiple simultaneous uploads with per-item loading states
+13. ✅ Deployed to Vercel (drobe-eight.vercel.app)
 
-### What's Pending
-1. ✅ Deploy Edge Functions for AI features - **DONE**
-   - ✅ `analyze-clothing` - Deployed to Supabase
-   - ✅ `suggest-outfits` - Deployed to Supabase
-   - ✅ `get-weather` - Deployed to Supabase
-
-2. ✅ Add Anthropic API key for AI features - **DONE**
-3. ✅ Add OpenWeatherMap API key for weather - **DONE**
-4. 🐛 **DEBUGGING**: Claude API model access issue
-   - Edge Functions deployed but returning "model not found" errors
-   - Need to verify correct Claude model name and API tier access
-   - Tested models: `claude-3-5-sonnet-20241022`, `claude-3-5-sonnet-20240620` (both failed)
-5. ⏳ Test full photo upload → AI analysis flow - **Blocked by #4**
-6. ⏳ Test outfit suggestion generation - **Blocked by #4**
+### Completed This Session
+1. ✅ Deploy Edge Functions for AI features
+   - ✅ `analyze-clothing` - Deployed and working
+   - ✅ `suggest-outfits` - Deployed and working
+   - ✅ `get-weather` - Deployed and working
+2. ✅ CORS configuration for all edge functions
+3. ✅ Claude API integration with correct model (`claude-sonnet-4-5-20250929`)
+4. ✅ Weather API integration (imperial units)
+5. ✅ Full photo upload → AI analysis flow tested and working
+6. ✅ Outfit suggestion generation tested and working
+7. ✅ Loading states and UX improvements
 
 ## Next Steps
 
-### Immediate (To Resume AI Debugging)
-1. **Check Anthropic Console** (https://console.anthropic.com/)
-   - Verify API key tier (free vs paid)
-   - Check which models are available to your account
-   - Verify sufficient credits
+### Ready for Production Testing 🚀
+The MVP is complete and all core features are working! Next steps:
 
-2. **Try Alternative Models**
-   - Test with `claude-3-opus-20240229` (most reliable for vision)
-   - Or check Anthropic docs for current model names
-   - Update Edge Function with working model name
+1. **Deploy to Vercel** (if not already done)
+   - Push latest changes to main branch
+   - Vercel auto-deploys from GitHub
+   - Verify all features work in production
 
-3. **Test Edge Function**
-   - Use Supabase Dashboard → Edge Functions → Invoke
-   - Use test payload: `{"imageUrl": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800"}`
-   - Verify successful response before testing in app
+2. **User Testing**
+   - Sign up flow
+   - Upload multiple wardrobe photos
+   - Test AI categorization accuracy
+   - Generate outfit suggestions for different occasions
+   - Test on both mobile (Safari & Chrome) and desktop
+   - Verify weather display is accurate
 
-4. **Resume Full Testing**
-   - Once model issue resolved, test wardrobe photo upload
-   - Test AI categorization flow
-   - Test outfit suggestions
+3. **Monitor Edge Function Usage**
+   - Check Supabase logs for errors
+   - Monitor Anthropic API usage and costs
+   - Monitor OpenWeatherMap API calls
 
-### Short Term Improvements
-- Add loading states and error handling UI
-- Add toast notifications for user feedback
-- Implement outfit preview modal
-- Add wardrobe item detail view
+### Short Term Improvements (Post-MVP)
+- ✅ ~~Add loading states and error handling UI~~ - DONE
+- Add toast notifications for user feedback (instead of alerts)
+- Implement outfit preview modal with larger images
+- Add wardrobe item edit functionality (change category/colors)
+- Add outfit planning to calendar with dates
 - Implement actual event creation in planner
+- Add ability to change location for weather
+- Add profile settings page (change name, location, preferences)
 
 ### Future Enhancements (Post-MVP)
 - Social login (Google, Apple)
@@ -206,13 +257,17 @@ OPENWEATHER_API_KEY=<your-key>
 - `src/contexts/WeatherContext.tsx` - Weather state
 
 ### UI Components
-- `src/app/App.tsx` - Main app component
+- `src/app/App.tsx` - Main app component with responsive layout
+- `src/app/components/BottomNav.tsx` - Bottom navigation with viewport offset
 - `src/app/components/screens/SplashScreen.tsx`
-- `src/app/components/screens/AuthScreen.tsx`
+- `src/app/components/screens/AuthScreen.tsx` - With viewport-aware padding
 - `src/app/components/screens/WardrobeScreen.tsx`
-- `src/app/components/screens/AIScreen.tsx`
+- `src/app/components/screens/AIScreen.tsx` - Redesigned header
 - `src/app/components/screens/OutfitPlannerScreen.tsx`
-- `src/app/components/screens/ProfileScreen.tsx`
+- `src/app/components/screens/ProfileScreen.tsx` - Dynamic stats display
+
+### Hooks
+- `src/hooks/useViewportOffset.ts` - Browser-specific bottom offset detection
 
 ### Documentation
 - `docs/EDGE_FUNCTIONS_SETUP.md` - Edge Functions deployment guide
@@ -235,11 +290,22 @@ All tables have Row Level Security (RLS) policies to ensure users can only acces
 
 ### Resolved
 - ✅ Logo import path errors - Fixed by migrating from `figma:asset` to local assets
-- ✅ Logo too small - Increased sizes across all screens
+- ✅ Logo too small - Increased sizes to 58px for consistency across main screens
 - ✅ Authentication flow - Fully integrated with Supabase Auth
+- ✅ Mobile bottom nav cut off by browser chrome - Fixed with `useViewportOffset` hook
+- ✅ ProfileScreen sustainability section - Removed per user request
+- ✅ ProfileScreen stats - Now show dynamic data from contexts
+- ✅ Desktop layout - Shows centered mobile preview with gradient background
+- ✅ Claude API model access - Fixed by using `claude-sonnet-4-5-20250929` model
+- ✅ CORS errors on edge functions - Added proper CORS headers
+- ✅ JSON parsing errors - Strip markdown code blocks from Claude responses
+- ✅ Weather showing Celsius - Changed to Fahrenheit and MPH
+- ✅ Upload blocking UI - Refactored to async loading per item
+- ✅ Add button blank screen - Removed undefined `isUploading` variable
+- ✅ Style me button blank screen - Removed undefined `outfit.weather.alerts`
 
 ### Open
-- None currently
+- None! All core features working ✅
 
 ## Design Decisions
 
@@ -249,30 +315,70 @@ All tables have Row Level Security (RLS) policies to ensure users can only acces
 4. **Client-Side Image Resize** - Reduce bandwidth and storage costs
 5. **No Background Removal for MVP** - Deferred to reduce complexity
 6. **Email/Password Auth First** - Social login deferred post-MVP
+7. **Browser-Specific Viewport Offsets** - Fixed offsets (Safari 20px, Chrome 90px) more reliable than dynamic detection
+8. **Responsive Desktop Preview** - Centered mobile view with gradient background for desktop users
 
 ## Testing Checklist
 
-- [ ] Sign up new user
-- [ ] Sign in existing user
-- [ ] Upload wardrobe photo
-- [ ] View wardrobe items
-- [ ] AI categorization works
-- [ ] Generate outfit suggestions
-- [ ] Save favorite outfits
-- [ ] Create event in planner
-- [ ] View profile stats
-- [ ] Sign out
+### Core Features (All Working ✅)
+- [x] Sign up new user
+- [x] Sign in existing user
+- [x] Upload wardrobe photo
+- [x] AI analyzes photo automatically
+- [x] View wardrobe items with loading states
+- [x] Upload multiple photos simultaneously
+- [x] AI categorization works (category, subcategory, colors, formality, seasons)
+- [x] Weather displays correctly (Fahrenheit, MPH, location)
+- [x] Generate outfit suggestions based on occasion
+- [x] AI considers weather in outfit recommendations
+- [x] View outfit suggestions with actual wardrobe items
+- [x] Star button saves outfits to database
+- [x] View profile stats (dynamic from database)
+- [x] Mobile viewport works on Safari
+- [x] Mobile viewport works on Chrome
+- [x] Desktop responsive layout works
+- [x] Sign out
+
+### Not Yet Implemented (Post-MVP)
+- [ ] Edit wardrobe items after upload
+- [ ] Delete outfits from favorites
+- [ ] Create events in planner with dates
+- [ ] Change location for weather
+- [ ] Edit profile information
 
 ## Timeline
 
 - **Day 1** (Mar 5): Setup, services, contexts, auth ✅
-- **Day 2** (Mar 6): Edge Functions, AI integration, testing ⏳
-- **Day 3** (Mar 7): Polish, bug fixes, deployment prep ⏳
+- **Day 2** (Mar 6): Edge Functions, UI polish, mobile viewport fixes, Vercel deployment, **AI Integration** ✅
+- **Status**: **MVP COMPLETE** 🎉
 
 ---
 
-**Notes**:
-- App is currently running in development mode
-- All core features implemented and functional
-- Ready for Edge Function deployment and full testing
-- Logo assets properly configured and sized
+## 🎉 MVP COMPLETE - Summary
+
+**All Core Features Working:**
+- ✅ User authentication and profiles
+- ✅ Photo upload with client-side optimization
+- ✅ AI-powered clothing categorization (Claude Vision)
+- ✅ Real-time weather integration (OpenWeatherMap)
+- ✅ AI outfit suggestions based on occasion and weather
+- ✅ Wardrobe management with loading states
+- ✅ Outfit favorites and saving
+- ✅ Mobile-first responsive design
+- ✅ Production deployment on Vercel
+
+**Deployment Info:**
+- Live at: drobe-eight.vercel.app
+- Database: Supabase (PostgreSQL)
+- Edge Functions: Deployed to Supabase
+- Storage: Supabase Storage (wardrobe-photos bucket)
+
+**API Keys Required:**
+- `ANTHROPIC_API_KEY` - For Claude AI (vision & recommendations)
+- `OPENWEATHER_API_KEY` - For weather data
+- `SUPABASE_URL` & `SUPABASE_ANON_KEY` - For backend
+
+**Ready for:**
+- Production user testing
+- Feedback collection
+- Feature prioritization for V2

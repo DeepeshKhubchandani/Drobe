@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ClothingItem } from "../ClothingItem";
 import logoImg from "../../../assets/logo.png";
+import { useWeather } from "../../../contexts/WeatherContext";
+import { useWardrobe } from "../../../contexts/WardrobeContext";
+import { useOutfits } from "../../../contexts/OutfitContext";
+import { AIService, OutfitSuggestion } from "../../../services/ai";
 
 const suggestions = [
   "Friend's wedding this Saturday",
@@ -42,11 +46,17 @@ interface AIScreenProps {
 }
 
 export function AIScreen({ onNavigate }: AIScreenProps) {
+  const { weather } = useWeather();
+  const { items } = useWardrobe();
+  const { saveOutfit } = useOutfits();
+
   const [input, setInput] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [activeQuery, setActiveQuery] = useState("");
   const [generating, setGenerating] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [aiSuggestions, setAiSuggestions] = useState<OutfitSuggestion[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleFavorite = (id: string) => {
     setFavorites((prev) =>
@@ -54,13 +64,29 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
     );
   };
 
-  const handleSubmit = (query: string) => {
+  const handleSubmit = async (query: string) => {
     setActiveQuery(query);
     setGenerating(true);
-    setTimeout(() => {
-      setGenerating(false);
+    setError(null);
+
+    // Call the suggest-outfits edge function
+    const { suggestions: fetchedSuggestions, error: aiError } = await AIService.suggestOutfits(
+      query,
+      weather,
+      items
+    );
+
+    setGenerating(false);
+
+    if (aiError || !fetchedSuggestions || fetchedSuggestions.length === 0) {
+      setError(aiError || "No outfit suggestions available. Try adding more items to your wardrobe!");
+      // Fall back to mock data for demo purposes
+      setAiSuggestions([]);
       setSubmitted(true);
-    }, 1800);
+    } else {
+      setAiSuggestions(fetchedSuggestions);
+      setSubmitted(true);
+    }
   };
 
   return (
@@ -93,16 +119,29 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
         {!submitted && !generating && (
           <>
             {/* Weather context card */}
-            <div
-              className="mb-4 flex items-center gap-3"
-              style={{ background: "linear-gradient(135deg, #2c2318, #1a1a1a)", borderRadius: 16, padding: "12px 14px", border: "1px solid rgba(201,169,110,0.15)" }}
-            >
-              <span style={{ fontSize: 28 }}>⛅</span>
-              <div className="flex-1">
-                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", fontWeight: 500 }}>Partly Cloudy · 14° · London</p>
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>Rain likely at 3pm · 18 km/h wind · Low 9°</p>
+            {weather && (
+              <div
+                className="mb-4 flex items-center gap-3"
+                style={{ background: "linear-gradient(135deg, #2c2318, #1a1a1a)", borderRadius: 16, padding: "12px 14px", border: "1px solid rgba(201,169,110,0.15)" }}
+              >
+                <span style={{ fontSize: 28 }}>
+                  {weather.icon === '01d' ? '☀️' : weather.icon === '01n' ? '🌙' :
+                   weather.icon.startsWith('02') ? '⛅' :
+                   weather.icon.startsWith('03') || weather.icon.startsWith('04') ? '☁️' :
+                   weather.icon.startsWith('09') || weather.icon.startsWith('10') ? '🌧️' :
+                   weather.icon.startsWith('11') ? '⛈️' :
+                   weather.icon.startsWith('13') ? '❄️' : '🌫️'}
+                </span>
+                <div className="flex-1">
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.9)", fontWeight: 500 }}>
+                    {weather.condition} · {weather.temp}°F · {weather.location || 'Evanston, IL'}
+                  </p>
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>
+                    {weather.description} · {weather.wind_speed} mph wind
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Input box */}
             <div
@@ -240,47 +279,102 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
               </div>
               <div>
                 <p style={{ fontSize: 13, color: "#1A1A1A", fontWeight: 500 }}>{activeQuery}</p>
-                <p style={{ fontSize: 11, color: "#A0917E", marginTop: 3 }}>Found 2 great options from your wardrobe</p>
-              </div>
-            </div>
-
-            {/* Weather considered banner */}
-            <div
-              className="flex items-center gap-2 mb-4"
-              style={{ background: "linear-gradient(135deg, #2c2318, #1a1a1a)", borderRadius: 14, padding: "10px 14px" }}
-            >
-              <span style={{ fontSize: 16 }}>⛅</span>
-              <div className="flex-1">
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>
-                  <span style={{ color: "#C9A96E", fontWeight: 600 }}>Weather considered</span> · 14°, rain after 3pm · Outfits include layers &amp; rain-friendly picks
+                <p style={{ fontSize: 11, color: "#A0917E", marginTop: 3 }}>
+                  {error ? error : `Found ${aiSuggestions.length} great options from your wardrobe`}
                 </p>
               </div>
             </div>
 
-            <p style={{ fontSize: 11, color: "#A0917E", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", marginBottom: 12 }}>
-              Recommended outfits
-            </p>
-
-            {outfitResults.map((outfit, idx) => (
+            {/* Weather considered banner */}
+            {weather && !error && aiSuggestions.length > 0 && (
               <div
-                key={outfit.id}
+                className="flex items-center gap-2 mb-4"
+                style={{ background: "linear-gradient(135deg, #2c2318, #1a1a1a)", borderRadius: 14, padding: "10px 14px" }}
+              >
+                <span style={{ fontSize: 16 }}>
+                  {weather.icon === '01d' ? '☀️' : weather.icon === '01n' ? '🌙' :
+                   weather.icon.startsWith('02') ? '⛅' :
+                   weather.icon.startsWith('03') || weather.icon.startsWith('04') ? '☁️' :
+                   weather.icon.startsWith('09') || weather.icon.startsWith('10') ? '🌧️' :
+                   weather.icon.startsWith('11') ? '⛈️' :
+                   weather.icon.startsWith('13') ? '❄️' : '🌫️'}
+                </span>
+                <div className="flex-1">
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>
+                    <span style={{ color: "#C9A96E", fontWeight: 600 }}>Weather considered</span> · {weather.temp}°F, {weather.description} · Outfits tailored for conditions
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {!error && aiSuggestions.length > 0 && (
+              <p style={{ fontSize: 11, color: "#A0917E", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", marginBottom: 12 }}>
+                Recommended outfits
+              </p>
+            )}
+
+            {/* Show error or fallback to mock data */}
+            {error && (
+              <div
+                style={{
+                  background: "#fff",
+                  borderRadius: 16,
+                  padding: "24px",
+                  textAlign: "center",
+                  border: "1px solid #F0EDE8"
+                }}
+              >
+                <p style={{ fontSize: 14, color: "#A0917E", marginBottom: 8 }}>
+                  {error}
+                </p>
+                <button
+                  onClick={() => {
+                    setSubmitted(false);
+                    setError(null);
+                  }}
+                  style={{
+                    background: "#1A1A1A",
+                    color: "#fff",
+                    borderRadius: 12,
+                    padding: "10px 20px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginTop: 12
+                  }}
+                >
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {aiSuggestions.map((outfit, idx) => (
+              <div
+                key={`outfit-${idx}`}
                 className="mb-4 overflow-hidden"
                 style={{ background: "#fff", borderRadius: 20, border: idx === 0 ? "2px solid #C9A96E" : "1px solid #F0EDE8", padding: 16 }}
               >
                 {/* Header with title, star, and weather badge */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", fontWeight: 400, color: "#1A1A1A", marginBottom: 2 }}>{outfit.title}</h3>
+                    <h3 style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", fontWeight: 400, color: "#1A1A1A", marginBottom: 2 }}>{outfit.name}</h3>
                     {idx === 0 && (
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "#C9A96E", letterSpacing: "0.5px" }}>✦ TOP PICK · {outfit.confidence}% MATCH</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#C9A96E", letterSpacing: "0.5px" }}>✦ TOP PICK</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => toggleFavorite(`ai-${outfit.id}`)}
+                      onClick={async () => {
+                        // Save outfit to database
+                        const itemIds = outfit.items.map(item => item.id);
+                        await saveOutfit(itemIds, outfit.name, outfit.occasion, outfit.reasoning, weather ? {
+                          temp: weather.temp,
+                          condition: weather.condition
+                        } : undefined);
+                        toggleFavorite(`ai-${idx}`);
+                      }}
                       style={{
-                        background: favorites.includes(`ai-${outfit.id}`) ? "#FFF9ED" : "#F7F5F2",
-                        border: favorites.includes(`ai-${outfit.id}`) ? "1px solid #C9A96E" : "1px solid #E8E3DC",
+                        background: favorites.includes(`ai-${idx}`) ? "#FFF9ED" : "#F7F5F2",
+                        border: favorites.includes(`ai-${idx}`) ? "1px solid #C9A96E" : "1px solid #E8E3DC",
                         borderRadius: 10,
                         padding: "6px",
                         display: "flex",
@@ -289,48 +383,51 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
                         cursor: "pointer",
                       }}
                     >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill={favorites.includes(`ai-${outfit.id}`) ? "#C9A96E" : "none"}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill={favorites.includes(`ai-${idx}`) ? "#C9A96E" : "none"}>
                         <path d="M8 2.5L9.5 6.5H13.5L10.5 9L11.5 13L8 10.5L4.5 13L5.5 9L2.5 6.5H6.5L8 2.5Z" stroke="#C9A96E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </button>
-                    <div
-                      style={{
-                        background: "#F7F5F2",
-                        border: "1px solid #E8E3DC",
-                        borderRadius: 100,
-                        padding: "4px 10px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                      }}
-                    >
-                      <span style={{ fontSize: 11 }}>{outfit.weather.icon}</span>
-                      <span style={{ fontSize: 11, color: "#1A1A1A", fontWeight: 500 }}>{outfit.weather.temp}°</span>
-                    </div>
+                    {weather && (
+                      <div
+                        style={{
+                          background: "#F7F5F2",
+                          border: "1px solid #E8E3DC",
+                          borderRadius: 100,
+                          padding: "4px 10px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        <span style={{ fontSize: 11 }}>
+                          {weather.icon === '01d' ? '☀️' : weather.icon === '01n' ? '🌙' :
+                           weather.icon.startsWith('02') ? '⛅' :
+                           weather.icon.startsWith('03') || weather.icon.startsWith('04') ? '☁️' :
+                           weather.icon.startsWith('09') || weather.icon.startsWith('10') ? '🌧️' :
+                           weather.icon.startsWith('11') ? '⛈️' :
+                           weather.icon.startsWith('13') ? '❄️' : '🌫️'}
+                        </span>
+                        <span style={{ fontSize: 11, color: "#1A1A1A", fontWeight: 500 }}>{weather.temp}°F</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Clothing items */}
                 <div className="flex flex-col gap-2 mb-3">
                   {outfit.items.map((item, itemIdx) => (
-                    <ClothingItem key={itemIdx} name={item.name} image={item.image} />
+                    <ClothingItem
+                      key={itemIdx}
+                      name={`${item.subcategory || item.category} - ${item.colors.join(', ')}`}
+                      image={item.thumbnail_url || item.photo_url}
+                    />
                   ))}
                 </div>
 
                 {/* Reason */}
-                <p style={{ fontSize: 13, color: "#6B5E4E", lineHeight: 1.6, marginBottom: 10 }}>
-                  ✦ {outfit.reason}
+                <p style={{ fontSize: 13, color: "#6B5E4E", lineHeight: 1.6, marginBottom: 12 }}>
+                  ✦ {outfit.reasoning}
                 </p>
-
-                {/* Weather alerts for this outfit */}
-                <div className="flex flex-col gap-1.5 mb-3">
-                  {outfit.weather.alerts.map((alert, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span style={{ fontSize: 12 }}>{i === 0 ? "🌡️" : "🌧️"}</span>
-                      <p style={{ fontSize: 11, color: "#A0917E", lineHeight: 1.4 }}>{alert}</p>
-                    </div>
-                  ))}
-                </div>
 
                 <button
                   style={{

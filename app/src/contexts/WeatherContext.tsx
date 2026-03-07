@@ -17,20 +17,20 @@ export function WeatherProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const refresh = async () => {
-    if (!profile?.location) return;
+    // Use profile location or default to Evanston, IL
+    const location = profile?.location || 'Evanston, IL 60201';
 
     setIsLoading(true);
     const { weather: fetchedWeather } = await WeatherService.getWeather(
-      profile.location
+      location
     );
     setWeather(fetchedWeather);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    if (profile?.location) {
-      refresh();
-    }
+    // Fetch weather with default location or profile location
+    refresh();
   }, [profile?.location]);
 
   return (

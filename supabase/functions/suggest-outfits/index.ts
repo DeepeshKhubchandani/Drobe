@@ -2,19 +2,59 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: corsHeaders,
+    });
+  }
+
   try {
-    const { occasion, weather, wardrobeItems } = await req.json();
+    let occasion: string | undefined;
+    let weather: any;
+    let wardrobeItems: any[];
+
+    // Try to parse JSON body safely
+    try {
+      const body = await req.json();
+      occasion = body.occasion;
+      weather = body.weather;
+      wardrobeItems = body.wardrobeItems;
+    } catch (e) {
+      // If JSON parsing fails, return error
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+    }
 
     if (!occasion || !wardrobeItems) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Missing required fields: occasion and wardrobeItems' }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          }
+        }
       );
     }
 
     const weatherContext = weather
-      ? `Weather: ${weather.temp}°C, ${weather.condition}. Consider layering and weather-appropriate items.`
+      ? `Weather: ${weather.temp}°F, ${weather.condition}. Consider layering and weather-appropriate items.`
       : '';
 
     const itemsList = wardrobeItems
@@ -54,7 +94,7 @@ Return only valid JSON.`;
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 2048,
         messages: [
           {
@@ -66,7 +106,44 @@ Return only valid JSON.`;
     });
 
     const data = await response.json();
-    const suggestionsText = data.content[0].text;
+
+    // Log the full response for debugging
+    console.log('Claude API response:', JSON.stringify(data));
+
+    // Check if response has error
+    if (data.error) {
+      return new Response(
+        JSON.stringify({ error: `Claude API error: ${data.error.message}` }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+    }
+
+    // Check if response has expected structure
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      return new Response(
+        JSON.stringify({ error: 'Unexpected Claude API response format' }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+    }
+
+    let suggestionsText = data.content[0].text;
+
+    // Strip markdown code blocks if present
+    // Claude sometimes wraps JSON in ```json ... ```
+    suggestionsText = suggestionsText.replace(/^```json\s*/m, '').replace(/\s*```$/m, '');
+
     const parsed = JSON.parse(suggestionsText);
 
     const suggestions = parsed.map((suggestion: any) => ({
@@ -78,13 +155,24 @@ Return only valid JSON.`;
 
     return new Response(
       JSON.stringify({ suggestions }),
-      { headers: { 'Content-Type': 'application/json' } }
+      {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        }
+      }
     );
   } catch (error) {
     console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      {
+        status: 500,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+        }
+      }
     );
   }
 });
