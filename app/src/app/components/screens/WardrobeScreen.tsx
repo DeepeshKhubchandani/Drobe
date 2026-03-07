@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { ClothingItem } from "../ClothingItem";
 import logoImg from "../../../assets/logo.png";
+import logoMini from "../../../assets/DrobeLogoMini.png";
 import { useWardrobe } from "../../../contexts/WardrobeContext";
 import { useOutfits } from "../../../contexts/OutfitContext";
+import { useViewportOffset } from "../../../hooks/useViewportOffset";
 
 const categories = ["All", "Tops", "Bottoms", "Outerwear", "Shoes", "Accessories"];
 
@@ -14,6 +16,7 @@ interface WardrobeScreenProps {
 export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
   const { items, isLoading, loadingItemIds, addItem, deleteItem } = useWardrobe();
   const { outfits, toggleFavorite } = useOutfits();
+  const bottomOffset = useViewportOffset();
   const [activeCategory, setActiveCategory] = useState("All");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selectedItem, setSelectedItem] = useState<typeof items[0] | null>(null);
@@ -157,8 +160,17 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <div style={{ width: 80, height: 80, borderRadius: 20, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
-              <span style={{ fontSize: 36, color: "#C9A96E" }}>+</span>
+            <div style={{ width: 80, height: 80, marginBottom: 16 }}>
+              <img
+                src={logoMini}
+                alt="Drobe"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  opacity: 0.6
+                }}
+              />
             </div>
             <h3 style={{ fontSize: 18, fontWeight: 600, color: "#1A1A1A", marginBottom: 8 }}>No Items Yet</h3>
             <p style={{ fontSize: 14, color: "#A0917E", marginBottom: 20, textAlign: "center", maxWidth: 240 }}>
@@ -359,6 +371,7 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
               padding: 24,
+              paddingBottom: `${24 + bottomOffset}px`,
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -431,7 +444,8 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               background: "#F7F5F2",
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
-              padding: "24px 20px 40px",
+              padding: "24px 20px",
+              paddingBottom: `${40 + bottomOffset}px`,
               maxHeight: "80vh",
               overflowY: "auto",
             }}

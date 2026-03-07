@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ClothingItem } from "../ClothingItem";
 import logoImg from "../../../assets/logo.png";
+import logoMini from "../../../assets/DrobeLogoMini.png";
 import { useWeather } from "../../../contexts/WeatherContext";
 import { useWardrobe } from "../../../contexts/WardrobeContext";
 import { useOutfits } from "../../../contexts/OutfitContext";
@@ -224,43 +225,37 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
 
         {generating && (
           <div className="flex flex-col items-center justify-center py-16">
-            {/* Animated logo */}
+            {/* Spinning Drobe Logo */}
+            <style>
+              {`
+                @keyframes spinPause {
+                  0% { transform: rotate(0deg); }
+                  30% { transform: rotate(360deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              `}
+            </style>
             <div
               style={{
-                width: 64,
-                height: 64,
-                borderRadius: 20,
-                background: "linear-gradient(135deg, #C9A96E, #a07840)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: 80,
+                height: 80,
                 marginBottom: 20,
-                animation: "pulse 1.5s ease-in-out infinite",
+                animation: "spinPause 2s ease-in-out infinite",
               }}
             >
-              <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
-                <path d="M18 8C19.1 8 20 7.1 20 6C20 4.9 19.1 4 18 4C16.9 4 16 4.9 16 6C16 7.1 16.9 8 18 8Z" fill="white" />
-                <path d="M18 8V11M18 11C18 11 10 15 6 20C4 22.5 6 26 10 26H26C30 26 32 22.5 30 20C26 15 18 11 18 11Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
+              <img
+                src={logoMini}
+                alt="Loading"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain"
+                }}
+              />
             </div>
             <p style={{ fontSize: 16, color: "#1A1A1A", fontWeight: 500, fontFamily: "'Playfair Display', serif" }}>
               Styling your look...
             </p>
-            <p style={{ fontSize: 13, color: "#A0917E", marginTop: 6 }}>Checking weather · Searching 47 items</p>
-            <div className="flex gap-1.5 mt-6">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#C9A96E",
-                    animation: `bounce 1s ease-in-out ${i * 0.2}s infinite`,
-                  }}
-                />
-              ))}
-            </div>
           </div>
         )}
 
@@ -319,11 +314,23 @@ export function AIScreen({ onNavigate }: AIScreenProps) {
                 style={{
                   background: "#fff",
                   borderRadius: 16,
-                  padding: "24px",
+                  padding: "32px 24px",
                   textAlign: "center",
                   border: "1px solid #F0EDE8"
                 }}
               >
+                <div style={{ width: 64, height: 64, margin: "0 auto 16px" }}>
+                  <img
+                    src={logoMini}
+                    alt="Drobe"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      opacity: 0.6
+                    }}
+                  />
+                </div>
                 <p style={{ fontSize: 14, color: "#A0917E", marginBottom: 8 }}>
                   {error}
                 </p>
