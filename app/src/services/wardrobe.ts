@@ -109,21 +109,68 @@ export class WardrobeService {
   }
 
   /**
-   * Delete wardrobe item
+   * Delete wardrobe item and its images from storage
    */
   static async deleteWardrobeItem(itemId: string): Promise<boolean> {
-    // TODO: Also delete images from storage
-    const { error } = await supabase
-      .from('wardrobe_items')
-      .delete()
-      .eq('id', itemId);
+    try {
+      // First, get the item to find the image URLs
+      const { data: item, error: fetchError } = await supabase
+        .from('wardrobe_items')
+        .select('photo_url, thumbnail_url')
+        .eq('id', itemId)
+        .single();
 
-    if (error) {
-      console.error('Error deleting item:', error);
+      if (fetchError) {
+        console.error('Error fetching item for deletion:', fetchError);
+        return false;
+      }
+
+      // Extract the storage paths from the URLs
+      // URLs format: https://.../storage/v1/object/public/wardrobe-photos/{path}
+      const extractPath = (url: string): string | null => {
+        try {
+          const match = url.match(/wardrobe-photos\/(.+)$/);
+          return match ? match[1] : null;
+        } catch {
+          return null;
+        }
+      };
+
+      const photoPath = extractPath(item.photo_url);
+      const thumbnailPath = extractPath(item.thumbnail_url);
+
+      // Delete from database first
+      const { error: deleteError } = await supabase
+        .from('wardrobe_items')
+        .delete()
+        .eq('id', itemId);
+
+      if (deleteError) {
+        console.error('Error deleting item from database:', deleteError);
+        return false;
+      }
+
+      // Delete images from storage (non-blocking, fire and forget)
+      const filesToDelete = [];
+      if (photoPath) filesToDelete.push(photoPath);
+      if (thumbnailPath) filesToDelete.push(thumbnailPath);
+
+      if (filesToDelete.length > 0) {
+        supabase.storage
+          .from('wardrobe-photos')
+          .remove(filesToDelete)
+          .then(({ error: storageError }) => {
+            if (storageError) {
+              console.error('Error deleting images from storage:', storageError);
+            }
+          });
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in deleteWardrobeItem:', error);
       return false;
     }
-
-    return true;
   }
 
   /**
