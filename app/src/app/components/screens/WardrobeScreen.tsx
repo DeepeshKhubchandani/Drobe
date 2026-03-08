@@ -20,7 +20,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selectedItem, setSelectedItem] = useState<typeof items[0] | null>(null);
-  const [showAddDialog, setShowAddDialog] = useState(false);
 
   const filtered =
     activeCategory === "All"
@@ -37,8 +36,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
   const handleAddPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-
-    setShowAddDialog(false);
 
     // Upload all files in parallel
     const uploadPromises = Array.from(files).map(file => addItem(file));
@@ -102,8 +99,16 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               </svg>
             )}
           </button>
-          <button
-            onClick={() => setShowAddDialog(true)}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleAddPhoto}
+            style={{ display: "none" }}
+            id="add-photos-input"
+          />
+          <label
+            htmlFor="add-photos-input"
             style={{
               background: "#C9A96E",
               borderRadius: 12,
@@ -114,10 +119,11 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
               display: "flex",
               alignItems: "center",
               gap: 6,
+              cursor: "pointer",
             }}
           >
             <span style={{ fontSize: 16 }}>+</span> Add
-          </button>
+          </label>
           </div>
         </div>
       </div>
@@ -181,8 +187,8 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
             <p style={{ fontSize: 14, color: "#A0917E", marginBottom: 20, textAlign: "center", maxWidth: 240 }}>
               Start building your digital wardrobe by adding your first clothing item
             </p>
-            <button
-              onClick={() => setShowAddDialog(true)}
+            <label
+              htmlFor="add-photos-input"
               style={{
                 padding: "12px 24px",
                 borderRadius: 12,
@@ -190,10 +196,11 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                 color: "#1A1A1A",
                 fontSize: 14,
                 fontWeight: 600,
+                cursor: "pointer",
               }}
             >
               Add First Item
-            </button>
+            </label>
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-2 gap-3">
@@ -235,12 +242,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                       </div>
                     </div>
                   )}
-                  <div
-                    className="absolute bottom-2 right-2"
-                    style={{ background: "rgba(255,255,255,0.9)", backdropFilter: "blur(4px)", borderRadius: 8, padding: "3px 8px" }}
-                  >
-                    <span style={{ fontSize: 10, color: "#6B5E4E", fontWeight: 500 }}>×{item.worn_count}</span>
-                  </div>
                   {hasOutfits && (
                     <div
                       className="absolute top-2 right-2"
@@ -277,16 +278,16 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
             );
             })}
             {/* Add item card */}
-            <button
-              onClick={() => setShowAddDialog(true)}
+            <label
+              htmlFor="add-photos-input"
               className="flex flex-col items-center justify-center"
-              style={{ background: "#fff", borderRadius: 18, border: "2px dashed #DDD8D0", minHeight: 220 }}
+              style={{ background: "#fff", borderRadius: 18, border: "2px dashed #DDD8D0", minHeight: 220, cursor: "pointer" }}
             >
               <div style={{ width: 40, height: 40, borderRadius: 12, background: "#F7F5F2", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
                 <span style={{ fontSize: 22, color: "#C9A96E", lineHeight: 1 }}>+</span>
               </div>
               <p style={{ fontSize: 12, color: "#A0917E", fontWeight: 500 }}>Add Item</p>
-            </button>
+            </label>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -338,7 +339,7 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                     {isLoadingAnalysis ? "Analyzing..." : (item.subcategory || item.category)}
                   </p>
                   <p style={{ fontSize: 11, color: "#A0917E", marginTop: 2 }}>
-                    {item.category} · Worn {item.worn_count}×
+                    {item.category}
                   </p>
                   <div className="flex gap-1 mt-1.5">
                     {item.colors.slice(0, 2).map((color) => (
@@ -355,83 +356,6 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
           </div>
         )}
       </div>
-
-      {/* Add Dialog */}
-      {showAddDialog && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            zIndex: 50,
-            display: "flex",
-            alignItems: "flex-end",
-          }}
-          onClick={() => setShowAddDialog(false)}
-        >
-          <div
-            style={{
-              width: "100%",
-              background: "#F7F5F2",
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              padding: 24,
-              paddingBottom: `${24 + bottomOffset}px`,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
-              Add Items
-            </h3>
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleAddPhoto}
-              style={{ display: "none" }}
-              id="camera-input"
-            />
-            <label
-              htmlFor="camera-input"
-              style={{
-                display: "block",
-                padding: 16,
-                background: "#fff",
-                borderRadius: 12,
-                marginBottom: 12,
-                cursor: "pointer",
-                textAlign: "center",
-              }}
-            >
-              Take Photo
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleAddPhoto}
-              style={{ display: "none" }}
-              id="gallery-input"
-            />
-            <label
-              htmlFor="gallery-input"
-              style={{
-                display: "block",
-                padding: 16,
-                background: "#fff",
-                borderRadius: 12,
-                cursor: "pointer",
-                textAlign: "center",
-              }}
-            >
-              Choose from Gallery
-            </label>
-            <p style={{ fontSize: 12, color: "#A0917E", marginTop: 12, textAlign: "center" }}>
-              You can select multiple photos at once
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Item Detail Modal */}
       {selectedItem && (
@@ -470,7 +394,7 @@ export function WardrobeScreen({ onNavigate }: WardrobeScreenProps) {
                   {selectedItem.subcategory || selectedItem.category}
                 </h2>
                 <p style={{ fontSize: 13, color: "#A0917E", marginBottom: 6 }}>
-                  {selectedItem.category} · Worn {selectedItem.worn_count}×
+                  {selectedItem.category}
                 </p>
                 <div className="flex gap-1.5 flex-wrap">
                   {selectedItem.colors.map((color) => (
