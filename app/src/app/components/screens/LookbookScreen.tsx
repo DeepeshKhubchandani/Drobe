@@ -75,7 +75,7 @@ export function LookbookScreen({ onNavigate }: LookbookScreenProps) {
           }}
         >
           {/* Main Image */}
-          <div style={{ position: "relative", width: "100%", aspectRatio: "4/5" }}>
+          <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
             <img
               src={lookOfTheDay.imageUrl}
               alt={lookOfTheDay.title}
@@ -110,69 +110,22 @@ export function LookbookScreen({ onNavigate }: LookbookScreenProps) {
                 style={{
                   fontSize: 12,
                   color: "rgba(255,255,255,0.85)",
-                  marginBottom: 10,
                   textShadow: "0 1px 4px rgba(0,0,0,0.3)",
                   fontStyle: "italic",
                 }}
               >
                 {lookOfTheDay.sponsor}
               </p>
-              <div className="flex gap-2">
-                <span
-                  style={{
-                    background: "rgba(255,255,255,0.2)",
-                    backdropFilter: "blur(10px)",
-                    padding: "4px 12px",
-                    borderRadius: 20,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#fff",
-                    border: "1px solid rgba(255,255,255,0.3)",
-                  }}
-                >
-                  {lookOfTheDay.occasion}
-                </span>
-                <span
-                  style={{
-                    background: "rgba(255,255,255,0.2)",
-                    backdropFilter: "blur(10px)",
-                    padding: "4px 12px",
-                    borderRadius: 20,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#fff",
-                    border: "1px solid rgba(255,255,255,0.3)",
-                  }}
-                >
-                  {lookOfTheDay.season}
-                </span>
-              </div>
             </div>
           </div>
 
           {/* Details */}
-          <div style={{ padding: 16 }}>
-            {/* Items in this look */}
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A", marginBottom: 10 }}>
-              Items in this look
-            </h3>
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              {lookOfTheDay.items.map((item, index) => (
-                <div
-                  key={index}
-                  style={{
-                    background: "#F7F5F2",
-                    borderRadius: 8,
-                    padding: "8px 10px",
-                    border: "1px solid #E8E3DC",
-                  }}
-                >
-                  <p style={{ fontSize: 12, fontWeight: 600, color: "#1A1A1A", marginBottom: 1 }}>
-                    {item.name}
-                  </p>
-                  <p style={{ fontSize: 10, color: "#A0917E" }}>{item.category}</p>
-                </div>
-              ))}
+          <div style={{ padding: 14 }}>
+            {/* Items - inline list */}
+            <div style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 13, color: "#1A1A1A", marginBottom: 6 }}>
+                {lookOfTheDay.items.map((item) => item.name).join(' • ')}
+              </p>
             </div>
 
             {/* CTA */}
@@ -191,7 +144,6 @@ export function LookbookScreen({ onNavigate }: LookbookScreenProps) {
                 color: "#fff",
                 border: "none",
                 cursor: "pointer",
-                marginTop: 12,
                 textAlign: "center",
                 textDecoration: "none",
               }}
