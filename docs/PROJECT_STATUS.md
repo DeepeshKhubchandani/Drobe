@@ -1,6 +1,6 @@
 # Drobe MVP - Project Status
 
-**Last Updated**: March 8, 2026 - 11:30 PM
+**Last Updated**: March 9, 2026 - 8:30 PM
 **Status**: ✅ MVP Complete - All Core Features Working
 
 ## Overview
@@ -70,13 +70,19 @@ Drobe is an AI-powered wardrobe management and outfit planning Progressive Web A
 
 ### 6. UI Screens
 - ✅ **AuthScreen** - Sign in/Sign up with toggle (logo: 280px) - Default landing page
+- ✅ **PreferencesScreen** - Onboarding/edit user preferences (name, gender, age, style, colors)
 - ✅ **WardrobeScreen** - Clothes/Outfits tabs with photo upload (logo: 58px)
   - Clothes tab: Grid/list view of wardrobe items with categories
   - Outfits tab: Grid of favorite outfits with 2x2 item previews
 - ✅ **AIScreen** - AI stylist interface with "Style AI" title (logo: 58px)
   - Simplified outfit cards with "Add to Outfits" button
-- ✅ **OutfitPlannerScreen** - Plan outfits for events (logo: 58px)
-- ✅ **ProfileScreen** - User profile with dynamic stats from contexts (logo: 58px)
+- ✅ **LookbookScreen** - Magazine-style "Look of the Day" discovery page (logo: 58px)
+  - Replaced OutfitPlannerScreen
+  - Features sponsored outfit content
+- ✅ **ProfileScreen** - User profile with preferences and stats (logo: 58px)
+  - Shows name, email, gender, age
+  - Displays style preferences and color palettes
+  - 2 stat cards: Items and Outfits (favorited)
 
 ### 7. Recent Updates
 
@@ -127,6 +133,43 @@ Drobe is an AI-powered wardrobe management and outfit planning Progressive Web A
   - Shows reasoning for each outfit suggestion
   - Displays actual wardrobe items with photos
   - Star button saves outfits to database
+
+**March 9, 2026 - Lookbook & User Preferences:**
+- ✅ **Lookbook page (replaced Planner)**:
+  - Magazine-style "Look of the Day" feature
+  - Featured outfit with sponsor attribution ("brought to you by The Good Trade")
+  - Hero image with overlay text and occasion/season tags
+  - Items breakdown showing what's in the look
+  - "Shop This Look" button linking to sponsor website
+  - "More Inspiration" section with additional featured looks
+  - Sponsors: The Good Trade, Toad&Co, Cerci, Omnes
+  - Magazine icon in bottom navigation
+- ✅ **User preferences system**:
+  - Onboarding preferences screen after sign-up
+  - Collects: Name, Gender, Age, Style preferences, Color palettes
+  - Style options: Minimalist, Streetwear, Classic, Bohemian, Sporty, Preppy, Edgy, Casual
+  - Color options: Colorful, Earthy, Dark, Neutral, Bright (multi-select)
+  - Preferences saved to profile.style_preferences
+  - Edit preferences from Profile page
+  - Name saved to display_name field
+- ✅ **Profile page redesign**:
+  - Removed Edit button next to email
+  - Removed Wear Activity section
+  - Name displayed in bold with email and gender/age below
+  - Cleaned up Style Profile section with better organization
+  - Demographics shown in header (gender • age format)
+  - Style preferences and color palettes in dedicated sections
+  - Stats reduced to 2 cards (Items, Outfits) and centered
+  - "Outfits" now shows count of favorited outfits
+- ✅ **Onboarding flow improvements**:
+  - New users land on Wardrobe page after completing preferences
+  - Fixed flash of AI page before preferences screen
+  - Added loading check for profile data before rendering
+  - Name field pre-populated when editing preferences
+- ✅ **Type safety updates**:
+  - Added UserPreferences interface
+  - Updated Profile type to include typed style_preferences
+  - Backward compatibility for colors (string → string[])
 
 **March 8, 2026 - UX Polish & Refinements:**
 - ✅ **Authentication flow simplified**:
@@ -254,6 +297,12 @@ OPENWEATHER_API_KEY=<your-key>
 
 ## Next Steps
 
+### Immediate - AI Improvements 🎯
+- [ ] **Update AI prompts to use user preferences**
+  - Pass gender, age, style preferences, and color palettes to outfit suggestion prompt
+  - Make suggestions more personalized based on user profile
+  - Update `suggest-outfits` edge function with enhanced prompt
+
 ### Ready for Production Testing 🚀
 The MVP is complete and all core features are working! Next steps:
 
@@ -263,10 +312,11 @@ The MVP is complete and all core features are working! Next steps:
    - Verify all features work in production
 
 2. **User Testing**
-   - Sign up flow
+   - Sign up flow with preferences onboarding
    - Upload multiple wardrobe photos
    - Test AI categorization accuracy
    - Generate outfit suggestions for different occasions
+   - Test Lookbook page and sponsor links
    - Test on both mobile (Safari & Chrome) and desktop
    - Verify weather display is accurate
 
@@ -277,13 +327,13 @@ The MVP is complete and all core features are working! Next steps:
 
 ### Short Term Improvements (Post-MVP)
 - ✅ ~~Add loading states and error handling UI~~ - DONE
+- ✅ ~~User preferences system~~ - DONE
+- ✅ ~~Lookbook/discovery page~~ - DONE
 - Add toast notifications for user feedback (instead of alerts)
 - Implement outfit preview modal with larger images
 - Add wardrobe item edit functionality (change category/colors)
-- Add outfit planning to calendar with dates
-- Implement actual event creation in planner
 - Add ability to change location for weather
-- Add profile settings page (change name, location, preferences)
+- Dynamic Lookbook content (database-driven instead of hardcoded)
 
 ### Future Enhancements (Post-MVP)
 - Social login (Google, Apple)
@@ -318,14 +368,15 @@ The MVP is complete and all core features are working! Next steps:
 - `src/contexts/WeatherContext.tsx` - Weather state
 
 ### UI Components
-- `src/app/App.tsx` - Main app component with responsive layout
-- `src/app/components/BottomNav.tsx` - Bottom navigation with viewport offset
+- `src/app/App.tsx` - Main app component with responsive layout and onboarding flow
+- `src/app/components/BottomNav.tsx` - Bottom navigation with Lookbook magazine icon
 - `src/app/components/screens/SplashScreen.tsx`
 - `src/app/components/screens/AuthScreen.tsx` - With viewport-aware padding
-- `src/app/components/screens/WardrobeScreen.tsx`
+- `src/app/components/screens/PreferencesScreen.tsx` - User preferences onboarding and editing
+- `src/app/components/screens/WardrobeScreen.tsx` - Clothes/Outfits tabs
 - `src/app/components/screens/AIScreen.tsx` - Redesigned header
-- `src/app/components/screens/OutfitPlannerScreen.tsx`
-- `src/app/components/screens/ProfileScreen.tsx` - Dynamic stats display
+- `src/app/components/screens/LookbookScreen.tsx` - Magazine-style discovery page (replaced OutfitPlannerScreen)
+- `src/app/components/screens/ProfileScreen.tsx` - User profile with preferences display
 
 ### Hooks
 - `src/hooks/useViewportOffset.ts` - Browser-specific bottom offset detection

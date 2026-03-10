@@ -31,6 +31,7 @@ export default function App() {
   // Check if user needs to complete preferences (new user onboarding)
   const needsPreferences = user && profile && (!profile.style_preferences || Object.keys(profile.style_preferences).length === 0);
 
+  // Show loading screen while checking auth/profile
   if (isLoading) {
     return (
       <div
@@ -72,6 +73,36 @@ export default function App() {
   // Show auth screen if not logged in
   if (!user) {
     return <AuthScreen onSuccess={() => {}} />;
+  }
+
+  // Show loading while profile is being fetched for logged-in user
+  if (!profile) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center"
+        style={{
+          background: 'linear-gradient(135deg, #F0ECE4 0%, #E8E2D8 50%, #EDE5D8 100%)',
+        }}
+      >
+        <div
+          style={{
+            width: 80,
+            height: 80,
+            animation: "spinPause 2s ease-in-out infinite",
+          }}
+        >
+          <img
+            src={logoMini}
+            alt="Loading"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain"
+            }}
+          />
+        </div>
+      </div>
+    );
   }
 
   // Show preferences screen if user hasn't set preferences yet
