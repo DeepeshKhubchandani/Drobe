@@ -67,116 +67,72 @@ We use **two AI models** in Drobe:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js v18+
-- Supabase account ([supabase.com](https://supabase.com))
-- Anthropic API key ([console.anthropic.com](https://console.anthropic.com))
-- OpenWeatherMap API key ([openweathermap.org](https://openweathermap.org/api))
+- **Node.js** v18+ and npm
+- **Supabase account** (free tier): [supabase.com](https://supabase.com)
+- **Anthropic API key**: [console.anthropic.com](https://console.anthropic.com) (~$5-10 for testing)
+- **OpenWeatherMap API key** (free tier): [openweathermap.org](https://openweathermap.org/api)
 
-### Quick Setup
+### Installation
 
-```bash
-# 1. Clone and install
-git clone <repository-url>
-cd drobe/app
-npm install
+1. **Clone and install dependencies**
+   ```bash
+   git clone <repository-url>
+   cd drobe/app
+   npm install
+   ```
 
-# 2. Configure environment
-cp .env.example .env.local
-# Edit .env.local with your Supabase URL and anon key
+2. **Configure environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
 
-# 3. Run the app
-npm run dev
-# Open http://localhost:5173
-```
+   Edit `app/.env.local` with your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key
+   ```
 
-### Database & AI Setup
-1. **Database**: Run SQL schema from `Docs/plans/2026-03-05-drobe-mvp-implementation.md` (lines 74-246) in Supabase SQL Editor
-2. **Edge Functions**: Deploy 3 functions from `Docs/EDGE_FUNCTIONS_SETUP.md` to Supabase with API keys
+   Find these in: Supabase Dashboard → Settings → API
 
-See full setup details in `Docs/` folder.
+3. **Set up database**
+
+   In Supabase Dashboard → SQL Editor, run the schema from:
+   `Docs/plans/2026-03-05-drobe-mvp-implementation.md` (lines 74-246)
+
+   This creates tables, RLS policies, and storage bucket.
+
+4. **Deploy Edge Functions** (for AI features)
+
+   Follow instructions in `Docs/EDGE_FUNCTIONS_SETUP.md` to deploy:
+   - `analyze-clothing` (Claude Vision)
+   - `suggest-outfits` (Claude text)
+   - `get-weather` (weather proxy)
+
+   Add your API keys as Supabase secrets.
+
+5. **Run the app**
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:5173](http://localhost:5173) and create an account to start!
 
 ---
 
 ## 📖 Usage Guide
 
-### Uploading Clothing Items
+### Upload Clothing
+Wardrobe → "+ Add" → Take/upload photo → AI analyzes (3-5s) → Review category, colors, formality
 
-1. **Navigate to Wardrobe** (hangar icon in bottom nav)
-2. **Click "+ Add"** button in top right
-3. **Choose photo method**:
-   - "Take Photo" (uses device camera)
-   - "Choose from Gallery" (selects from photos)
-4. **Wait for AI analysis** (~3-5 seconds)
-5. **Review categorization**:
-   - Category (tops, bottoms, outerwear, shoes, accessories)
-   - Subcategory (t-shirt, jeans, sneakers, etc.)
-   - Colors
-   - Formality level
-   - Seasonal tags
+**Tips**: Good lighting, single item, clear view (flat lay or hanging preferred)
 
-**Tips for best results**:
-- ✅ Good lighting (natural light preferred)
-- ✅ Single item per photo
-- ✅ Clear, unobstructed view
-- ✅ Flat lay or hanging (not worn)
-- ❌ Avoid multiple items in one photo
-- ❌ Avoid extreme angles or blur
+### Get Outfit Suggestions
+Style AI → Enter occasion (e.g., "job interview") → Review 2-3 AI-generated outfits with reasoning → Save favorites
 
-### Getting Outfit Suggestions
-
-1. **Navigate to Style AI** (sparkles icon in bottom nav)
-2. **Enter an occasion**:
-   - Natural language: "What should I wear to a wedding?"
-   - Or select Quick Occasion: "Job Interview", "Casual Brunch", etc.
-3. **Review suggestions** (2-3 outfits generated)
-   - Each shows item combinations with photos
-   - AI reasoning explains why the outfit works
-   - Weather badge shows current conditions
-4. **Save favorites**: Click "Add to Outfits" button (star icon)
-
-**Example occasions**:
-- "Job interview at a tech startup"
-- "Date night at a nice restaurant"
-- "Casual brunch with friends"
-- "Wedding in the summer"
-- "Work presentation"
-- "Coffee meeting"
-
-### Managing Your Wardrobe
-
-**Grid View** (default):
-- 2-column masonry layout
-- Thumbnail images
-- Category and formality tags
-- Tap item to see details
-
-**List View**:
-- Full-width rows
-- Larger thumbnails
-- More metadata visible
-- Swipe to delete (future feature)
-
-**Filtering**:
-- Use category tabs: All | Tops | Bottoms | Outerwear | Shoes | Accessories
-- Only shows items in selected category
-
-**Item Details**:
-- Tap any item to see full detail modal
-- View all AI-generated metadata
-- See which favorite outfits include this item
-- Delete item from wardrobe
-
-### Editing Preferences
-
-1. **Navigate to Profile** (person icon in bottom nav)
-2. **Click "Edit Preferences"**
-3. **Update**:
-   - Display name
-   - Gender and age
-   - Style preferences (multi-select)
-   - Color palettes (multi-select)
-4. **Save changes**
-5. **AI suggestions will now reflect your updates**
+### Manage Wardrobe
+- **View**: Grid or list view with category filters
+- **Details**: Tap items to see full AI metadata and delete
+- **Preferences**: Edit in Profile to personalize AI suggestions (gender, age, style, colors)
 
 ---
 
