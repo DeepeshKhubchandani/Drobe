@@ -4,9 +4,11 @@
 >
 > **Project Team**: Nick Gulson, Shinjini Biswas, George Pantazis, Deepesh Khubchandani, Saahithi Budharaju, Tatsuya Fujii
 
-An AI-powered Progressive Web App that helps you organize your wardrobe and receive personalized outfit recommendations using Claude Vision AI and weather-aware styling.
+An AI-Powered Mobile App that helps you organize your wardrobe and receive personalized outfit recommendations using Claude Vision AI and weather-aware styling.
 
 **Live Prototype**: [drobe-eight.vercel.app](https://drobe-eight.vercel.app) (Mobile-optimized)
+
+**Sample Images**: `Sample Images/` folder contains test clothing photos.
 
 ---
 
@@ -124,7 +126,7 @@ We use **two AI models** in Drobe:
 ### Upload Clothing
 Wardrobe → "+ Add" → Take/upload photo → AI analyzes (3-5s) → Review category, colors, formality
 
-**Tips**: Good lighting, single item, clear view (flat lay or hanging preferred)
+**Tips**: Good lighting, single item, clear view (flat lay or hanging preferred). Sample images available in `Sample Images/` folder for testing.
 
 ### Get Outfit Suggestions
 Style AI → Enter occasion (e.g., "job interview") → Review 2-3 AI-generated outfits with reasoning → Save favorites
