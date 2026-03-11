@@ -85,9 +85,7 @@ This working proof-of-concept demonstrates:
 
 ### Architecture Diagram
 
-![Drobe Architecture](./docs/architecture-diagram.png)
-
-*Note: See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed system design documentation with interactive Mermaid diagram.*
+See **[Docs/DrobeArchitectureDiagram.pdf](./Docs/DrobeArchitectureDiagram.pdf)** for the complete system architecture diagram.
 
 ### High-Level Flow
 
