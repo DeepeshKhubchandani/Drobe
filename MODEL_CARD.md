@@ -85,19 +85,19 @@ Drobe uses **two AI components** from Anthropic's Claude 3.5 Sonnet API:
 - **Weather Appropriateness**: Are suggestions suitable for current weather?
 - **User Satisfaction**: Do users find at least one suggestion wearable?
 
-### Results (Informal Testing)
+### Observed Performance
 
-**Clothing Analyzer** (50 items tested):
-- Category Accuracy: ~95% (48/50 correct)
-- Color Accuracy: ~90% (45/50 primary colors correct)
-- Formality Alignment: ~88% (44/50 reasonable)
+**Clothing Analyzer**:
+- Generally accurate at assigning correct categories for standard Western clothing
+- Reliably identifies primary colors in solid-colored items
+- Formality assessments align well with human judgment for common item types
 
-**Outfit Recommender** (20 occasions tested):
-- Outfit Completeness: ~95% (19/20 included all necessary pieces)
-- Occasion Appropriateness: ~85% (17/20 matched formality)
-- Weather Appropriateness: ~90% (18/20 considered weather)
+**Outfit Recommender**:
+- Consistently generates complete outfits with all necessary pieces
+- Suggestions generally match the formality and style of stated occasions
+- Effectively incorporates weather conditions into recommendations
 
-**What "good" means**: Users find at least 1 out of 2-3 suggestions wearable and appropriate. AI saves time compared to manual outfit planning.
+**Success Criteria**: The system is considered successful when users find at least 1 out of 2-3 suggestions wearable and appropriate, saving time compared to manual outfit planning.
 
 ---
 
