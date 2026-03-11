@@ -1,10 +1,12 @@
 # Drobe - AI-Powered Wardrobe Assistant
 
 > **Northwestern Kellogg MBAi 448 Final Project**
+>
+> **Project Team**: Nick Gulson, Shinjini Biswas, George Pantazis, Deepesh Khubchandani, Saahithi Budharaju, Tatsuya Fujii
 
 An AI-powered Progressive Web App that helps you organize your wardrobe and receive personalized outfit recommendations using Claude Vision AI and weather-aware styling.
 
-**Live Demo**: [drobe-eight.vercel.app](https://drobe-eight.vercel.app)
+**Live Prototype**: [drobe-eight.vercel.app](https://drobe-eight.vercel.app)
 
 ---
 
@@ -41,31 +43,6 @@ By combining AI-powered clothing analysis with intelligent outfit recommendation
 - **Organize efficiently**: Automatic categorization eliminates manual wardrobe tagging
 - **Shop their closet**: Maximize existing wardrobe instead of buying new clothes
 
-### What This Demo Shows
-
-This working proof-of-concept demonstrates:
-
-1. **AI Clothing Analysis** (Claude Vision)
-   - Upload a photo of any clothing item
-   - AI automatically categorizes it (tops, bottoms, shoes, etc.)
-   - Extracts colors, formality level, and seasonal appropriateness
-
-2. **Intelligent Outfit Recommendations** (Claude 3.5 Sonnet)
-   - Enter an occasion (e.g., "job interview", "casual brunch")
-   - AI suggests 2-3 complete outfits from your wardrobe
-   - Considers current weather, your style preferences, and occasion formality
-
-3. **User Personalization**
-   - Set your gender, age, style preferences (minimalist, streetwear, etc.)
-   - Choose color palettes (neutral, colorful, earthy, etc.)
-   - AI adapts suggestions to match your personal style
-
-4. **Full Wardrobe Management**
-   - View all items in grid or list view
-   - Filter by category (tops, bottoms, outerwear, etc.)
-   - Save favorite outfit combinations
-   - Curated "Look of the Day" inspiration
-
 ---
 
 ## 🎥 Demo Video
@@ -73,11 +50,11 @@ This working proof-of-concept demonstrates:
 **[Link to Product Demo Video]** *(Upload your video to YouTube/Vimeo and add link here)*
 
 *1-2 minute walkthrough showing:*
-- User uploading a clothing photo
-- AI automatically categorizing the item
-- User requesting outfit suggestions for an occasion
-- AI generating personalized recommendations
-- User saving a favorite outfit
+1. User requesting outfit suggestions for an occasion
+2. AI generating personalized recommendations
+3. User uploading a clothing photo
+4. AI automatically categorizing the item
+5. User views Look of the Day page
 
 ---
 
@@ -98,8 +75,6 @@ This working proof-of-concept demonstrates:
 | **Weather** | OpenWeatherMap API | Real-time weather data |
 | **Serverless** | Supabase Edge Functions | Hide API keys, server-side logic |
 | **Image Processing** | Canvas API (client-side) | Resize, compress, WebP conversion |
-
-**Architecture Document**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for comprehensive system design.
 
 ---
 
@@ -523,268 +498,3 @@ Before running this demo, you need:
 
 ---
 
-## 📁 Project Structure
-
-```
-drobe/
-├── app/                          # Main React application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/
-│   │   │   │   ├── screens/    # Main UI screens
-│   │   │   │   │   ├── AuthScreen.tsx
-│   │   │   │   │   ├── PreferencesScreen.tsx
-│   │   │   │   │   ├── WardrobeScreen.tsx
-│   │   │   │   │   ├── AIScreen.tsx
-│   │   │   │   │   ├── LookbookScreen.tsx
-│   │   │   │   │   └── ProfileScreen.tsx
-│   │   │   │   ├── BottomNav.tsx
-│   │   │   │   └── PhoneFrame.tsx
-│   │   │   └── App.tsx          # Main app component
-│   │   │
-│   │   ├── contexts/            # React Context providers
-│   │   │   ├── AuthContext.tsx
-│   │   │   ├── WardrobeContext.tsx
-│   │   │   ├── OutfitContext.tsx
-│   │   │   └── WeatherContext.tsx
-│   │   │
-│   │   ├── services/            # Business logic & API clients
-│   │   │   ├── auth.ts
-│   │   │   ├── wardrobe.ts
-│   │   │   ├── outfits.ts
-│   │   │   ├── ai.ts
-│   │   │   ├── weather.ts
-│   │   │   └── image.ts
-│   │   │
-│   │   ├── lib/
-│   │   │   ├── supabase.ts      # Supabase client setup
-│   │   │   └── types.ts         # TypeScript type definitions
-│   │   │
-│   │   ├── hooks/               # Custom React hooks
-│   │   │   └── useViewportOffset.ts
-│   │   │
-│   │   ├── styles/
-│   │   │   └── index.css        # Global styles
-│   │   │
-│   │   └── main.tsx             # App entry point
-│   │
-│   ├── public/                  # Static assets
-│   ├── .env.local              # Environment variables (git ignored)
-│   ├── .env.example            # Environment template
-│   ├── package.json            # Dependencies
-│   ├── tsconfig.json           # TypeScript config
-│   ├── vite.config.ts          # Vite config
-│   └── tailwind.config.js      # Tailwind config
-│
-├── Docs/                        # Project documentation
-│   ├── PROJECT_STATUS.md       # Current status & features
-│   ├── EDGE_FUNCTIONS_SETUP.md # Deploy guide for AI
-│   └── plans/                  # Design & implementation plans
-│       ├── 2026-03-05-drobe-mvp-design.md
-│       └── 2026-03-05-drobe-mvp-implementation.md
-│
-├── ARCHITECTURE.md             # System architecture documentation
-├── MODEL_CARD.md               # AI model documentation
-├── README.md                   # This file
-├── .gitignore                  # Git exclusions
-└── 2026 MBAi 448 Final Project - Product Demo.pdf  # Assignment
-```
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `app/src/app/App.tsx` | Main app component, routing logic |
-| `app/src/contexts/AuthContext.tsx` | Authentication state management |
-| `app/src/contexts/WardrobeContext.tsx` | Wardrobe data & CRUD operations |
-| `app/src/services/ai.ts` | AI service (calls Edge Functions) |
-| `app/src/services/image.ts` | Client-side image processing |
-| `app/src/lib/supabase.ts` | Supabase client initialization |
-| `app/.env.local` | Environment variables (YOU MUST CREATE) |
-| `ARCHITECTURE.md` | System design documentation |
-| `MODEL_CARD.md` | AI model card & evaluation |
-| `Docs/PROJECT_STATUS.md` | Development timeline & status |
-
----
-
-## 🌐 Deployment
-
-### Current Deployment
-
-**Frontend**: Deployed on Vercel
-- URL: [drobe-eight.vercel.app](https://drobe-eight.vercel.app)
-- Auto-deploys from `main` branch
-
-**Backend**: Supabase Cloud
-- Database: PostgreSQL with RLS
-- Storage: `wardrobe-photos` bucket
-- Edge Functions: Deployed to Supabase
-
-### Deploy Your Own
-
-**Vercel Deployment** (Recommended):
-
-1. **Push to GitHub**
-   ```bash
-   git push origin main
-   ```
-
-2. **Import to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Click "Import Project"
-   - Select your GitHub repo
-   - Root directory: `app/`
-   - Build command: `npm run build`
-   - Output directory: `dist`
-
-3. **Set environment variables** in Vercel:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-
-4. **Deploy**
-   - Vercel will build and deploy automatically
-   - Access at `<your-project>.vercel.app`
-
-**Note**: Edge Functions must be deployed separately to Supabase (they're not part of the Vercel deployment).
-
----
-
-## 🐛 Troubleshooting
-
-### Installation Issues
-
-**Problem**: `npm install` fails with dependency errors
-
-**Solution**:
-```bash
-# Clear npm cache
-npm cache clean --force
-
-# Delete node_modules and package-lock.json
-rm -rf node_modules package-lock.json
-
-# Reinstall
-npm install
-```
-
-**Problem**: Node version mismatch
-
-**Solution**:
-```bash
-# Check version
-node --version
-
-# If < v18, upgrade Node.js
-# Use nvm (recommended): nvm install 18 && nvm use 18
-# Or download from nodejs.org
-```
-
-### Runtime Errors
-
-**Problem**: Blank screen or "Failed to connect to Supabase"
-
-**Solution**:
-- Check `.env.local` exists in `app/` directory
-- Verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are correct
-- Restart dev server: `Ctrl+C`, then `npm run dev`
-
-**Problem**: "AI features not working" or "analyze-clothing function not found"
-
-**Solution**:
-- Edge Functions not deployed yet
-- Follow `Docs/EDGE_FUNCTIONS_SETUP.md` to deploy
-- Or use app without AI (manual categorization only)
-
-**Problem**: Photos not uploading
-
-**Solution**:
-- Check Supabase Storage bucket `wardrobe-photos` exists
-- Verify RLS policies are set (see setup instructions)
-- Check browser console for specific error
-
-**Problem**: Weather not showing
-
-**Solution**:
-- `get-weather` Edge Function not deployed
-- Or `OPENWEATHER_API_KEY` not set in Edge Function secrets
-- Default location is Evanston, IL (can change in Profile → Location)
-
-### Database Issues
-
-**Problem**: "Row Level Security policy violation"
-
-**Solution**:
-- RLS policies not set up correctly
-- Re-run SQL schema from `Docs/plans/2026-03-05-drobe-mvp-implementation.md` lines 74-246
-- Ensure policies allow authenticated users to access own data
-
-**Problem**: "Table does not exist"
-
-**Solution**:
-- Database schema not created
-- Run setup SQL in Supabase Dashboard → SQL Editor
-
-### Performance Issues
-
-**Problem**: Slow image uploads
-
-**Solution**:
-- Normal! Client-side processing takes 1-2 seconds
-- Large images (>5MB) take longer
-- Use lower resolution photos for faster upload
-
-**Problem**: Slow AI responses
-
-**Solution**:
-- Claude API calls take 2-8 seconds (normal)
-- Check Anthropic API dashboard for rate limits
-- Verify internet connection
-
----
-
-## 👥 Team & Contact
-
-**Northwestern Kellogg MBAi 448 Final Project**
-
-- **Course**: MBAi 448 - Artificial Intelligence for Business
-- **Institution**: Northwestern University - Kellogg School of Management
-- **Quarter**: Winter 2026
-- **Instructors**: Alex Castrounis & Harper Pack
-
-**Project Team**: *(Add your team member names here)*
-
-**For Questions or Issues**:
-- Check existing documentation: `Docs/PROJECT_STATUS.md`, `ARCHITECTURE.md`, `MODEL_CARD.md`
-- Review troubleshooting section above
-- Check Supabase logs for Edge Function errors
-- Verify environment variables are set correctly
-
----
-
-## 📄 License
-
-This project is for educational purposes as part of Northwestern Kellogg MBAi 448.
-
----
-
-## 🙏 Acknowledgments
-
-- **Anthropic** for Claude AI API
-- **Supabase** for backend infrastructure
-- **OpenWeatherMap** for weather data
-- **Figma** for initial design system
-- **Northwestern Kellogg** MBAi 448 teaching team for guidance
-
----
-
-**Last Updated**: March 11, 2026
-
-**Assignment Deliverable Checklist**:
-- ✅ Architecture diagram (`ARCHITECTURE.md`)
-- ✅ Model card (`MODEL_CARD.md`)
-- ✅ Demo video link (add above)
-- ✅ Complete README with setup instructions
-- ✅ Reproducible code and dependencies
-- ✅ Environment template (`.env.example`)
-- ✅ Expected outputs documented
-- ✅ No sensitive data in repo (`.gitignore` configured)
