@@ -1,8 +1,6 @@
 # Drobe - AI-Powered Wardrobe Assistant
 
-> **Northwestern Kellogg MBAi 448 Final Project**
->
-> **Project Team**: Nick Gulson, Shinjini Biswas, George Pantazis, Deepesh Khubchandani, Saahithi Budharaju, Tatsuya Fujii
+> **Project Team**: Deepesh Khubchandani, Nick Gulson, Shinjini Biswas
 
 An AI-Powered Mobile App that helps you organize your wardrobe and receive personalized outfit recommendations using Claude Vision AI and weather-aware styling.
 
